@@ -294,7 +294,8 @@ ipcMain.handle('test-llm-connection', async (event, settings) => {
 
 // 词库分析
 ipcMain.handle('analyze-text', (event, text) => {
-  return analyzeText(text);
+  const settings = loadSettings();
+  return analyzeText(text, settings.language);
 });
 
 // 文件保存
