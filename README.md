@@ -6,7 +6,7 @@
 
 ## 功能
 
-- 🎤 **实时语音识别**：基于 Sherpa-ONNX，完全离线，中文优化
+- 🎤 **实时语音识别**：基于 Sherpa-ONNX，完全离线，支持中文/英文单语言识别（在设置中切换）
 - 📝 **全屏字幕显示**：黑底大字，实时显示你说的每一句话
 - 🔍 **词库分析**：自动检测填充词、犹豫词、笼统词，给出精准替代
 - 🤖 **AI反馈**：支持 Groq/OpenAI/DeepSeek/Ollama 多后端
@@ -23,27 +23,37 @@ npm install
 
 ### 2. 下载语音识别模型
 
-需要下载 Sherpa-ONNX 的 streaming paraformer 中英双语模型：
+根据设置中选择的「识别语言」，应用会加载对应的流式模型：中文用 Paraformer 双语模型，英文用 Zipformer Transducer。两个模型互相独立，按需下载即可（只下你用得到的那个语言也能跑）。
 
 ```bash
 cd models
 
-# 方法一：使用 wget
+# 中文模型（Paraformer 双语 int8 流式，中文为主）
 wget https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-paraformer-bilingual-zh-en.tar.bz2
 tar xvf sherpa-onnx-streaming-paraformer-bilingual-zh-en.tar.bz2
 
-# 方法二：使用 huggingface
-# https://huggingface.co/csukuangfj/sherpa-onnx-streaming-paraformer-bilingual-zh-en
+# 英文模型（Zipformer Transducer int8 流式，纯英文）
+wget https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-en-2023-06-26.tar.bz2
+tar xvf sherpa-onnx-streaming-zipformer-en-2023-06-26.tar.bz2
 ```
 
 下载后 `models/` 目录应包含：
 ```
 models/
-└── sherpa-onnx-streaming-paraformer-bilingual-zh-en/
-    ├── encoder.int8.onnx
-    ├── decoder.int8.onnx
+├── sherpa-onnx-streaming-paraformer-bilingual-zh-en/            # 中文
+│   ├── encoder.int8.onnx
+│   ├── decoder.int8.onnx
+│   └── tokens.txt
+└── sherpa-onnx-streaming-zipformer-en-2023-06-26/               # 英文
+    ├── encoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx
+    ├── decoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx
+    ├── joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx
     └── tokens.txt
 ```
+
+> 模型来源：[k2-fsa/sherpa-onnx asr-models release](https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models)。
+
+在应用设置页「识别语言」下拉框中切换中文 / English，下次开始录制时会自动加载对应语言的模型。
 ### 3. 启动应用
 
 ```bash

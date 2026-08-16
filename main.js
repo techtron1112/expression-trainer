@@ -51,6 +51,7 @@ function loadSettings() {
     if (!raw.providers) {
       const migrated = {
         provider: raw.provider || 'deepseek',
+        language: raw.language || 'zh',
         providers: {
           openai: { ...DEFAULT_PROVIDER_CONFIGS.openai },
           deepseek: { ...DEFAULT_PROVIDER_CONFIGS.deepseek },
@@ -76,10 +77,12 @@ function loadSettings() {
         raw.providers[key] = { ...DEFAULT_PROVIDER_CONFIGS[key], ...raw.providers[key] };
       }
     }
+    if (!raw.language) raw.language = 'zh';
     return raw;
   }
   return {
     provider: 'deepseek',
+    language: 'zh',
     providers: JSON.parse(JSON.stringify(DEFAULT_PROVIDER_CONFIGS))
   };
 }
@@ -260,7 +263,8 @@ ipcMain.handle('close-current-window', (event) => {
 // 语音识别相关 - Web Audio方案
 ipcMain.handle('init-asr', async () => {
   try {
-    await initASR();
+    const settings = loadSettings();
+    await initASR(settings.language || 'zh');
     asrReady = true;
     return { success: true };
   } catch (error) {
